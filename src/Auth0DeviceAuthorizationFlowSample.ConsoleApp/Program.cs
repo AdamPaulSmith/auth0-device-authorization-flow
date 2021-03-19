@@ -1,12 +1,28 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Auth0DeviceAuthorizationFlowSample.ConsoleApp
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static async Task Main()
         {
-            Console.WriteLine("Hello World!");
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder =>
+                                         {
+                                             builder.AddSimpleConsole(options =>
+                                                                      {
+                                                                          options.SingleLine = true;
+                                                                          options.TimestampFormat = "hh:mm:ss ";
+                                                                      });
+                                         })
+                             .AddTransient<App>();
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            var app = serviceProvider.GetService<App>();
+            await app.RunAsync();
+            Console.ReadKey();
         }
     }
 }
